@@ -1,45 +1,1024 @@
 TREES
 1. Recover BST
-1. import java.util.Stack; 2. 3. class TreeNode{ 4. int val; 5. TreeNode left; 6. TreeNode right; 7. 8. TreeNode() {} 9. 10. TreeNode(int val){ 11. this.val = val; 12. } 13. 14. TreeNode(int val, TreeNode left, TreeNode right){ 15. this.val = val; 16. this.left = left; 17. this.right = right; 18. } 19. }
-20. class Solution{ 21. public void recoverbst(TreeNode root){ 22. Stack<TreeNode> stack = new Stack<>(); 23. TreeNode current = root; 24. TreeNode lastProcessed = null; 25. TreeNode[] swapped = new TreeNode[2]; 26. 27. while (!stack.isEmpty() || current != null){ 28. 29. while (current != null){ 30. stack.push(current); 31. current = current.left; 32. } 33. 34. current = stack.pop(); 35. if (lastProcessed != null && lastProcessed.val > current.val){ 36. if (swapped[0] == null){ 37. swapped[0] = lastProcessed; 38. swapped[1] = current; 39. } 40. else{ 41. swapped[1] = current; 42. break; 43. } 44. } 45. lastProcessed = current; 46. current = current.right; 47. } 48. } 49. } 50.
-51. public class Recover_BST{ 52. public static void main(String args[]){ 53. 54. TreeNode root = new TreeNode(3); 55. root.left = new TreeNode(1); 56. root.right = new TreeNode(4); 57. root.right.left = new TreeNode(2); 58. 59. Solution solution = new Solution(); 60. solution.recoverbst(root); 61. 62. printInorder(root); 63. 64. } 65. static void printInorder(TreeNode node){ 66. if (node == null){ 67. return; 68. } 69. printInorder(node.left); 70. System.out.println(" " + node.val); 71. printInorder(node.right); 72. } 73. }
-2. Views of a Tree
-1. import java.util.*; 2. import java.util.Map.Entry; 3. 4. class Node{ 5. int data, hd; 6. Node left, right; 7. 8. public Node(int data){ 9. this.data = data; 10. left = right = null; 11. this.hd = Integer.MAX_VALUE; 12. } 13. } 14. 15. public class Views_of_a_Tree { 16. 17. static Node root; 18. private List<Integer> path1 = new ArrayList<>(); 19. private List<Integer> path2 = new ArrayList<>(); 20.
-21. static Node build(String s[]){ 22. if (s[0].equals("N") || s.length == 0){ 23. return null; 24. } 25. 26. Node root = new Node(Integer.parseInt(s[0])); 27. Queue<Node> q = new LinkedList<Node>(); 28. q.add(root); 29. int i = 1; 30. 31. while(!q.isEmpty() && i < s.length){ 32. Node curr = q.poll(); 33. 34. String cval = s[i]; 35. if(!cval.equals("N")){ 36. int h = Integer.parseInt(cval); 37. curr.left = new Node(h); 38. q.add(curr.left); 39. } 40. i++; 41. 42. if (i >= s.length){ 43. break; 44. } 45. 46. cval = s[i]; 47. if (!cval.equals("N")){ 48. int h = Integer.parseInt(cval); 49. curr.right = new Node(h); 50. q.add(curr.right); 51. } 52. i++; 53. } 54. return root; 55. } 56.
-57. // Right View 58. void rightView(Node root){ 59. if (root == null){ 60. return; 61. } 62. 63. Queue<Node> q = new LinkedList<>(); 64. q.add(root); 65. 66. while (!q.isEmpty()){ 67. int n = q.size(); 68. for(int i = 0; i < n; i++){ 69. Node curr = q.peek(); 70. q.remove(); 71. if(i == n - 1){ 72. System.out.println(curr.data + " "); 73. } 74. 75. if (curr.left != null){ 76. q.add(curr.left); 77. } 78. 79. if(curr.right != null){ 80. q.add(curr.right); 81. } 82. } 83. } 84. } 85.
-86. // Left View 87. void leftView(Node root){ 88. if(root == null){ 89. return; 90. } 91. 92. Queue<Node> q = new LinkedList<>(); 93. q.add(root); 94. while(!q.isEmpty()){ 95. int n = q.size(); 96. for (int i = 1; i <= n; i++){ 97. Node curr = q.poll(); 98. 99. if (i == 1){ 100. System.out.print(curr.data + " "); 101. } 102. 103. if (curr.left != null){ 104. q.add(curr.left); 105. } 106. 107. if (curr.right != null){ 108. q.add(curr.right); 109. } 110. } 111. } 112. } 113.
-114. // Top View 115. static class QueueObj{ 116. Node node; 117. int hd; 118. 119. QueueObj(Node node, int hd){ 120. this,node = node; 121. this.hd = hd; 122. } 123. } 124. 125. static void topView(Node root){ 126. if (root == null){ 127. return ; 128. } 129. 130. Queue<QueueObj> q = new LinkedList<>(); 131. Map<Integer, Integer> map = new HashMap<>(); 132. int min = 0; 133. int max = 0; 134. 135. q.add(new QueueObj(root, 0)); 136. while (!q.isEmpty()){ 137. QueueObj curr = q.poll(); 138. 139. if(!map.containsKey(curr.hd)){ 140. map.put(curr.hd, curr.node.data); 141. } 142. 143. if(curr.node.left != null){ 144. min = Math.min(min, curr.hd - 1); 145. q.add(new QueueObj(curr.node.left, curr.hd - 1)); 146. } 147. 148. if(curr.node.right != null){ 149. max = Math.max(max, curr.hd + 1); 150. q.add(new QueueObj(curr.node.right, curr.hd + 1)); 151. } 152. } 153.
-154. for(; min <= max; min++){ 155. System.out.print(map.get(min) + " "); 156. } 157. } 158.
-159. // Bottom View 160. static void bottomView(Node root){ 161. if (root == null){ 162. return; 163. } 164. 165. int hd = 0; 166. 167. Map<Integer, Integer> map = new TreeMap<>(); 168. Queue<Node> queue = new LinkedList<Node>(); 169. root.hd = hd; 170. queue.add(root); 171. 172. while(!queue.isEmpty()){ 173. Node temp = queue.remove(); 174. hd = temp.hd; 175. map.put(hd, temp.data); 176. 177. if(temp.left != null){ 178. temp.left.hd = hd - 1; 179. queue.add(temp.left); 180. } 181. 182. if(temp.right != null){ 183. temp.right.hd = hd + 1; 184. queue.add(temp.right); 185. } 186. } 187. 188. for(int value : map.values()){ 189. System.out.print(value + " "); 190. } 191. } 192. 193. public static void main(String args[]){ 194. Scanner sc = new Scanner(System.in); 195. Views_of_a_Tree ob = new Views_of_a_Tree(); 196. String s[] = sc.nextLine().split(" "); 197. root = build(s); 198. ob.rightView(root); 199. System.out.println(); 200. ob.leftView(root);
-201. System.out.println(); 202. topView(root); 203. System.out.println(); 204. bottomView(root); 205. } 206. }
-3. Vertical Order Traversal of a BT
-1. import java.util.*; 2. import java.util.Map.Entry; 3. 4. class Node{ 5. int data; 6. Node left, right; 7. 8. public Node(int data){ 9. this.data = data; 10. left = right = null; 11. } 12. } 13. 14. public class Vertical_Order_Traversal { 15. static Node root; 16. 17. static class BinaryTree{ 18. private List<Integer> path1 = new ArrayList<>(); 19. private List<Integer> path2 = new ArrayList<>(); 20. 21. static Node build(String s[]){ 22. if (s[0].equals("N") || s.length == 0){ 23. return null; 24. } 25. Node root = new Node(Integer.parseInt(s[0])); 26. Queue<Node> q = new LinkedList<>(); 27. q.add(root); 28. 29. int i = 1; 30. while(!q.isEmpty() && i < s.length){ 31. Node curr = q.poll(); 32. String cval = s[i]; 33. if (!cval.equals("N")){ 34. int h = Integer.parseInt(cval); 35. curr.left = new Node(h); 36. q.add(curr.left); 37. }
-38. i++; 39. if (i >= s.length){ 40. break; 41. } 42. cval = s[i]; 43. if (!cval.equals("N")){ 44. int h = Integer.parseInt(cval); 45. curr.right = new Node(h); 46. q.add(curr.right); 47. } 48. i++; 49. } 50. 51. return root; 52. } 53. 54. static void preOrderTraversal(Node root, long hd, long vd, TreeMap<Long, Vector<Integer>> m){ 55. if(root == null){ 56. return; 57. } 58. long val = hd << 30 | vd; 59. if(m.get(val) != null){ 60. m.get(val).add(root.data); 61. } 62. else{ 63. Vector<Integer> v = new Vector<>(); 64. v.add(root.data); 65. m.put(val, v); 66. } 67. 68. preOrderTraversal(root.left, hd - 1, vd + 1, m); 69. preOrderTraversal(root.right, hd + 1, vd + 1, m); 70. } 71. 72. void verticalOrder(Node root){ 73. TreeMap<Long, Vector<Integer>> mp = new TreeMap<>(); 74. preOrderTraversal(root, 0, 1, mp); 75. int prekey = Integer.MAX_VALUE; 76.
-77. for(Entry<Long, Vector<Integer>> entry : mp.entrySet()){ 78. if(prekey != Integer.MAX_VALUE && (entry.getKey() >> 30 ) != prekey){ 79. System.out.println(); 80. } 81. prekey = (int) (entry.getKey() >> 30); 82. for(int x : entry.getValue()){ 83. System.out.print(x + " "); 84. } 85. } 86. } 87. } 88. 89. public static void main(String[] args) { 90. Scanner sc = new Scanner(System.in); 91. Vertical_Order_Traversal.BinaryTree bt = new Vertical_Order_Traversal.BinaryTree(); 92. 93. String s[] = sc.nextLine().split(" "); 94. root = bt.build(s); 95. bt.verticalOrder(root); 96. } 97. 98. } 99.
-4. Boundary Traversal of a Binary Tree
-1. import java.util.*; 2. import java.util.Map.Entry; 3. 4. class Node{ 5. int data; 6. Node left, right; 7. 8. public Node(int data){ 9. this.data = data; 10. left = right = null; 11. } 12. } 13. 14. public class BT_Boundary_Traversal { 15. static Node root; 16. 17. static Node build(String s[]){ 18. if(s[0].equals("N") || s.length == 0){ 19. return null; 20. } 21. Node root = new Node(Integer.parseInt(s[0])); 22. Queue<Node> q = new LinkedList<Node>(); 23. q.add(root); 24. 25. int i = 1; 26. while (!q.isEmpty() && i < s.length){ 27. Node curr = q.poll(); 28. String cval = s[i]; 29. if (!cval.equals("N")){ 30. int h = Integer.parseInt(cval); 31. curr.left = new Node(h); 32. q.add(curr.left); 33. } 34. i++; 35. if(i >= s.length){ 36. break; 37. } 38. cval = s[i];
-39. if(!cval.equals("N")){ 40. int h = Integer.parseInt(cval); 41. curr.right = new Node(h); 42. q.add(curr.right); 43. } 44. i++; 45. } 46. return root; 47. } 48. 49. // Print the leaves 50. void printLeaves(Node node){ 51. if (node == null){ 52. return ; 53. } 54. 55. printLeaves(node.left); 56. if (node.left == null && node.right == null){ 57. System.out.println(node.data + " "); 58. } 59. printLeaves(node.right); 60. } 61. 62. // Left Boundary 63. void printLeftBoundary(Node node){ 64. if (node == null){ 65. return ; 66. } 67. if(node.left != null){ 68. System.out.println(node.data + " "); 69. printLeftBoundary(node.left); 70. } 71. else if(node.right != null){ 72. System.out.println(node.data + " "); 73. printLeftBoundary(node.right); 74. } 75. } 76. 77. void printRightBoundary(Node node){ 78. if(node == null){ 79. return; 80. }
-81. if(node.right != null){ 82. printRightBoundary(node.right); 83. System.out.println(node.data + " "); 84. } 85. else if(node.left != null){ 86. printRightBoundary(node.left); 87. System.out.println(node.data + " "); 88. } 89. } 90. 91. // Print the boundary 92. void printBoundary(Node node){ 93. if(node == null){ 94. return; 95. } 96. System.out.println(node.data + " "); 97. printLeftBoundary(node.left); 98. printLeaves(node.left); 99. printLeaves(node.right); 100. printRightBoundary(node.right); 101. } 102. 103. public static void main(String args[]){ 104. Scanner sc = new Scanner(System.in); 105. BT_Boundary_Traversal ob = new BT_Boundary_Traversal(); 106. String s[] = sc.nextLine().split(" "); 107. root = build(s); 108. ob.printBoundary(root); 109. } 110. 111. } 112.
-GRAPHS
-1. BFS
-1. import java.util.*; 2. 3. public class Graph_BFS{ 4. private int V; // No of vertices 5. private LinkedList<Integer> adj[]; 6. 7. Graph_BFS(int v){ 8. V = v; 9. adj = new LinkedList[v]; 10. for(int i = 0; i < v; i++){ 11. adj[i] = new LinkedList(); 12. } 13. } 14. 15. void addEdge(int v, int w){ 16. adj[v].add(w); 17. } 18. 19. void BFS(int s){ 20. boolean visited[] = new boolean[V]; 21. 22. LinkedList<Integer> queue = new LinkedList<Integer>(); 23. 24. visited[s] = true; 25. queue.add(s); 26. 27. while(queue.size() != 0){ 28. s = queue.poll(); 29. System.out.print(s + " "); 30. 31. Iterator<Integer> i = adj[s].listIterator(); 32. while(i.hasNext()){ 33. int n = i.next(); 34. if(!visited[n]){
-35. visited[n] = true; 36. queue.add(n); 37. } 38. } 39. } 40. } 41. 42. public static void main(String args[]) { 43. Graph_BFS g = new Graph_BFS(4); 44. 45. g.addEdge(0, 1); 46. g.addEdge(0, 2); 47. g.addEdge(1, 2); 48. g.addEdge(2, 0); 49. g.addEdge(2, 3); 50. g.addEdge(3, 3); 51. 52. System.out.println("Following is Breadth First Traversal " + 53. "(starting from vertex 2)"); 54. 55. g.BFS(2); 56. } 57. } 58.
-2. DFS
-3. import java.util.*; 4. 5. public class Graphs_DFS { 6. private int V; 7. private LinkedList<Integer> adj[]; 8. 9. Graphs_DFS(int v){ 10. V = v; 11. adj = new LinkedList[v]; 12. for (int i = 0; i < v; i++){
-13. adj[i] = new LinkedList(); 14. } 15. } 16. 17. void addEdge(int v, int w){ 18. adj[v].add(w); 19. } 20. 21. void DFSUtil(int v, boolean visited[]){ 22. visited[v] = true; 23. System.out.print(v + " "); 24. 25. Iterator<Integer> i = adj[v].listIterator(); 26. while(i.hasNext()){ 27. int n = i.next(); 28. if(!visited[v]){ 29. DFSUtil(n, visited); 30. } 31. } 32. } 33. 34. void DFS(int v){ 35. boolean visited[] = new boolean[V]; 36. DFSUtil(v, visited); 37. } 38. 39. public static void main(String args[]) { 40. Graphs_DFS g = new Graphs_DFS(4); 41. 42. g.addEdge(0, 1); 43. g.addEdge(0, 2); 44. g.addEdge(1, 2); 45. g.addEdge(2, 0); 46. g.addEdge(2, 3); 47. g.addEdge(3, 3); 48. 49. System.out.println("Following is Depth First Traversal " + 50. "(starting from vertex 2)"); 51. 52. g.DFS(2); 53. }
-54. } 55.
-3. Dial’s Algo import java.util.*; public class Dials_Algo { static final int INF = Integer.MAX_VALUE; private int V; private ArrayList<ArrayList<Tuple>> adj; public Dials_Algo(int v) { this.V = v; this.adj = new ArrayList<ArrayList<Tuple>>(); for (int i = 0; i < v; i++) this.adj.add(new ArrayList<Tuple>()); } public void AddEdge(int u, int v, int w) { adj.get(u).add(new Tuple(v, w)); adj.get(v).add(new Tuple(u, w)); } public void shortestPath(int src, int W){ int[] dist = new int[V]; Arrays.fill(dist, INF); ArrayList<Integer>[] B = new ArrayList[W * V + 1]; for(int i = 0; i < W * V + 1; i++){ B[i] = new ArrayList<Integer>(); } B[0].add(src); dist[src] = 0; int idx = 0; while(true){ while (B[idx].size() == 0 && idx < W * V){ idx ++; } if (idx == W * V){ break; }
-int u = B[idx].get(0); B[idx].remove(0);
-for(Tuple i : adj.get(u)){ int v = i.v; int weight = i.w; int du = dist[u]; int dv = dist[v]; if(dv > du + weight){ dist[v] = du + weight; dv = dist[v]; B[dv].add(0, v); } } } System.out.println("Vertex Distance from Source"); for (int i = 0; i < V; ++i) System.out.println(i + "\t\t" + dist[i]); } static class Tuple{ int v, w; Tuple(int v, int w){ this.v = v; this.w = w; } } public static void main(String[] args) { Scanner s = new Scanner(System.in); int V = s.nextInt(); Dials_Algo g = new Dials_Algo(V); int e = s.nextInt(); int st, en, d; for (int i = 0; i < e; i++) { st = s.nextInt(); en = s.nextInt(); d = s.nextInt(); g.AddEdge(st, en, d); } g.shortestPath(0, e); }
+import java.util.Stack;
+
+class TreeNode {
+    int val;
+    TreeNode left;
+    TreeNode right;
+
+    TreeNode() {}
+
+    TreeNode(int val) {
+        this.val = val;
+    }
+
+    TreeNode(int val, TreeNode left, TreeNode right) {
+        this.val = val;
+        this.left = left;
+        this.right = right;
+    }
 }
-4. Bellman-Ford Algorithm
-import java.util.*; public class Bellman_Ford { class Edge{ int src, dest, weight; Edge(){ src = dest = weight = 0; } }; int V, E; Edge edge[]; Bellman_Ford(int v, int e){ V = v; E = e; edge = new Edge[e]; for(int i = 0; i < e; i++){ edge[i] = new Edge(); } } void BellmanFord(Bellman_Ford graph, int src){ int V = graph.V; int E = graph.E; int dist[] = new int[V]; for(int i = 0; i < V; i++){ dist[i] = Integer.MAX_VALUE; } dist[src] = 0; for(int i = 1; i < V; ++i){ for (int j = 0; j < E; ++j){ int u = graph.edge[j].src; int v = graph.edge[j].dest; int weight = graph.edge[j].weight; if (dist[u] != Integer.MAX_VALUE && dist[u] + weight < dist[v])
-dist[v] = dist[u] + weight; } }
-for (int j = 0; j < E; ++j) { int u = graph.edge[j].src; int v = graph.edge[j].dest; int weight = graph.edge[j].weight; if(dist[u]!=Integer.MAX_VALUE && dist[u]+weight<dist[v]){ System.out.println(-1); return; } } for(int i = 0; i < V; ++i) if(dist[i]!=Integer.MAX_VALUE) System.out.print(dist[i]+" "); else System.out.print(-1+" "); } public static void main(String[] args){ Scanner sc=new Scanner(System.in); int V = sc.nextInt(); int E = sc.nextInt(); Bellman_Ford graph = new Bellman_Ford(V,E); for(int i=0;i<E;i++){ int u=sc.nextInt(); int v=sc.nextInt(); int w=sc.nextInt(); graph.edge[i].src = u; graph.edge[i].dest = v; graph.edge[i].weight = w; } graph.BellmanFord(graph, 0); } }
-5. Topological Sort
-1. import java.util.*; 2. 3. class TopologicalSort { 4. // Graph coloring: 0->not visited...1->visited...2->visited & processed 5. private boolean detectCycleUtil(List<List<Integer>> adj, int[] visited, int v) { 6. if (visited[v] == 1) 7. return true; 8. if (visited[v] == 2) 9. return false; 10. 11. visited[v] = 1; // Mark current as visited 12. for (int i = 0; i < adj.get(v).size(); ++i) 13. if (detectCycleUtil(adj, visited, adj.get(v).get(i))) 14. return true; 15. 16. visited[v] = 2; // Mark current node as processed 17. return false; 18. } 19. 20. // Cycle detection 21. private boolean detectCycle(List<List<Integer>> adj, int n) { 22. int[] visited = new int[n]; 23. for (int i = 0; i < n; ++i) 24. if (visited[i] == 0) 25. if (detectCycleUtil(adj, visited, i)) 26. return true; 27. return false; 28. } 29. 30. // Topological sort 31. private void dfs(List<List<Integer>> adj, int v, boolean[] visited, Stack<Integer> mystack) { 32. visited[v] = true; 33. for (int i = 0; i < adj.get(v).size(); ++i)
-34. if (!visited[adj.get(v).get(i)]) 35. dfs(adj, adj.get(v).get(i), visited, mystack); 36. 37. mystack.push(v); 38. } 39. 40. public int[] findOrder(int numCourses, int[][] prerequisites) { 41. List<List<Integer>> adj = new ArrayList<>(); 42. for (int i = 0; i < numCourses; i++) 43. adj.add(new ArrayList<>()); 44. 45. for (int i = 0; i < prerequisites.length; ++i) 46. adj.get(prerequisites[i][1]).add(prerequisites[i][0]); 47. 48. int[] ans = new int[numCourses]; 49. if (detectCycle(adj, numCourses)) 50. return new int[0]; 51. 52. Stack<Integer> mystack = new Stack<>(); 53. boolean[] visited = new boolean[numCourses]; 54. 55. for (int i = 0; i < numCourses; ++i) 56. if (!visited[i]) 57. dfs(adj, i, visited, mystack); 58. 59. int index = 0; 60. while (!mystack.isEmpty()) { 61. ans[index++] = mystack.pop(); 62. } 63. return ans; 64. } 65. 66. public static void main(String[] args) { 67. TopologicalSort solution = new TopologicalSort(); 68. Scanner scanner = new Scanner(System.in); 69. 70. System.out.print("Enter the number of courses: "); 71. int numCourses = scanner.nextInt(); 72.
-73. System.out.print("Enter the number of prerequisites: "); 74. int n = scanner.nextInt(); 75. int[][] prerequisites = new int[n][2]; 76. 77. System.out.println("Enter prerequisite pairs (course, prerequisite):"); 78. for (int i = 0; i < n; i++) { 79. prerequisites[i][0] = scanner.nextInt(); 80. prerequisites[i][1] = scanner.nextInt(); 81. } 82. 83. int[] result = solution.findOrder(numCourses, prerequisites); 84. System.out.println("Topological order of courses:"); 85. System.out.println(Arrays.toString(result)); 86. } 87. } 88.
-HEAPS
-Heap Sort import java.util.*; public class HeapSort { // Method to perform heap sort public static void sort(int arr[]) { int N = arr.length; // Build heap (rearrange array) for (int i = N / 2 - 1; i >= 0; i--) { heapify(arr, N, i); } // One by one extract an element from heap for (int i = N - 1; i > 0; i--) { // Move current root to end int temp = arr[0]; arr[0] = arr[i]; arr[i] = temp; // Call max heapify on the reduced heap heapify(arr, i, 0); } } // To heapify a subtree rooted with node i which is an index in arr[]. N is size of heap static void heapify(int arr[], int N, int i) { int largest = i; // Initialize largest as root int l = 2 * i + 1; // left = 2*i + 1 int r = 2 * i + 2; // right = 2*i + 2 // If left child is larger than root if (l < N && arr[l] > arr[largest]) largest = l;
-// If right child is larger than largest so far if (r < N && arr[r] > arr[largest]) largest = r; // If largest is not root if (largest != i) { int swap = arr[i]; arr[i] = arr[largest]; arr[largest] = swap; // Recursively heapify the affected sub-tree heapify(arr, N, largest); } } public static void main(String args[]) { Scanner s = new Scanner(System.in); int n = s.nextInt(); // Input size of array int arr[] = new int[n]; // Array to store elements // Input elements of the array for (int i = 0; i < n; i++) arr[i] = s.nextInt(); sort(arr); // Sort the array using heap sort System.out.println("Sorted array is"); // Print the sorted array for (int i = 0; i < n; i++) System.out.print(arr[i] + " "); System.out.println(); // Move to next line } }
+
+class Solution {
+    public void recoverbst(TreeNode root) {
+        Stack<TreeNode> stack = new Stack<>();
+        TreeNode current = root;
+        TreeNode lastProcessed = null;
+        TreeNode[] swapped = new TreeNode[2];
+
+        while (!stack.isEmpty() || current != null) {
+            while (current != null) {
+                stack.push(current);
+                current = current.left;
+            }
+
+            current = stack.pop();
+            if (lastProcessed != null && lastProcessed.val > current.val) {
+                if (swapped[0] == null) {
+                    swapped[0] = lastProcessed;
+                    swapped[1] = current;
+                } else {
+                    swapped[1] = current;
+                    break;
+                }
+            }
+            lastProcessed = current;
+            current = current.right;
+        }
+    }
+}
+
+public class Recover_BST {
+    public static void main(String args[]) {
+        TreeNode root = new TreeNode(3);
+        root.left = new TreeNode(1);
+        root.right = new TreeNode(4);
+        root.right.left = new TreeNode(2);
+
+        Solution solution = new Solution();
+        solution.recoverbst(root);
+
+        printInorder(root);
+    }
+
+    static void printInorder(TreeNode node) {
+        if (node == null) {
+            return;
+        }
+        printInorder(node.left);
+        System.out.println(" " + node.val);
+        printInorder(node.right);
+    }
+}
+
+2. Views of a tree
+import java.util.*;
+import java.util.Map.Entry;
+
+class Node {
+    int data, hd;
+    Node left, right;
+
+    public Node(int data) {
+        this.data = data;
+        left = right = null;
+        this.hd = Integer.MAX_VALUE;
+    }
+}
+
+public class Views_of_a_Tree {
+
+    static Node root;
+    private List<Integer> path1 = new ArrayList<>();
+    private List<Integer> path2 = new ArrayList<>();
+
+    static Node build(String s[]) {
+        if (s[0].equals("N") || s.length == 0) {
+            return null;
+        }
+
+        Node root = new Node(Integer.parseInt(s[0]));
+        Queue<Node> q = new LinkedList<Node>();
+        q.add(root);
+        int i = 1;
+
+        while (!q.isEmpty() && i < s.length) {
+            Node curr = q.poll();
+
+            String cval = s[i];
+            if (!cval.equals("N")) {
+                int h = Integer.parseInt(cval);
+                curr.left = new Node(h);
+                q.add(curr.left);
+            }
+            i++;
+
+            if (i >= s.length) {
+                break;
+            }
+
+            cval = s[i];
+            if (!cval.equals("N")) {
+                int h = Integer.parseInt(cval);
+                curr.right = new Node(h);
+                q.add(curr.right);
+            }
+            i++;
+        }
+        return root;
+    }
+
+    // Right View
+    void rightView(Node root) {
+        if (root == null) {
+            return;
+        }
+
+        Queue<Node> q = new LinkedList<>();
+        q.add(root);
+
+        while (!q.isEmpty()) {
+            int n = q.size();
+            for (int i = 0; i < n; i++) {
+                Node curr = q.peek();
+                q.remove();
+                if (i == n - 1) {
+                    System.out.println(curr.data + " ");
+                }
+
+                if (curr.left != null) {
+                    q.add(curr.left);
+                }
+
+                if (curr.right != null) {
+                    q.add(curr.right);
+                }
+            }
+        }
+    }
+
+    // Left View
+    void leftView(Node root) {
+        if (root == null) {
+            return;
+        }
+
+        Queue<Node> q = new LinkedList<>();
+        q.add(root);
+        while (!q.isEmpty()) {
+            int n = q.size();
+            for (int i = 1; i <= n; i++) {
+                Node curr = q.poll();
+
+                if (i == 1) {
+                    System.out.print(curr.data + " ");
+                }
+
+                if (curr.left != null) {
+                    q.add(curr.left);
+                }
+
+                if (curr.right != null) {
+                    q.add(curr.right);
+                }
+            }
+        }
+    }
+
+    // Top View
+    static class QueueObj {
+        Node node;
+        int hd;
+
+        QueueObj(Node node, int hd) {
+            this.node = node;
+            this.hd = hd;
+        }
+    }
+
+    static void topView(Node root) {
+        if (root == null) {
+            return;
+        }
+
+        Queue<QueueObj> q = new LinkedList<>();
+        Map<Integer, Integer> map = new HashMap<>();
+        int min = 0;
+        int max = 0;
+
+        q.add(new QueueObj(root, 0));
+        while (!q.isEmpty()) {
+            QueueObj curr = q.poll();
+
+            if (!map.containsKey(curr.hd)) {
+                map.put(curr.hd, curr.node.data);
+            }
+
+            if (curr.node.left != null) {
+                min = Math.min(min, curr.hd - 1);
+                q.add(new QueueObj(curr.node.left, curr.hd - 1));
+            }
+
+            if (curr.node.right != null) {
+                max = Math.max(max, curr.hd + 1);
+                q.add(new QueueObj(curr.node.right, curr.hd + 1));
+            }
+        }
+
+        for (; min <= max; min++) {
+            System.out.print(map.get(min) + " ");
+        }
+    }
+
+    // Bottom View
+    static void bottomView(Node root) {
+        if (root == null) {
+            return;
+        }
+
+        int hd = 0;
+
+        Map<Integer, Integer> map = new TreeMap<>();
+        Queue<Node> queue = new LinkedList<Node>();
+        root.hd = hd;
+        queue.add(root);
+
+        while (!queue.isEmpty()) {
+            Node temp = queue.remove();
+            hd = temp.hd;
+            map.put(hd, temp.data);
+
+            if (temp.left != null) {
+                temp.left.hd = hd - 1;
+                queue.add(temp.left);
+            }
+
+            if (temp.right != null) {
+                temp.right.hd = hd + 1;
+                queue.add(temp.right);
+            }
+        }
+
+        for (int value : map.values()) {
+            System.out.print(value + " ");
+        }
+    }
+
+    public static void main(String args[]) {
+        Scanner sc = new Scanner(System.in);
+        Views_of_a_Tree ob = new Views_of_a_Tree();
+        String s[] = sc.nextLine().split(" ");
+        root = build(s);
+        ob.rightView(root);
+        System.out.println();
+        ob.leftView(root);
+        System.out.println();
+        topView(root);
+        System.out.println();
+        bottomView(root);
+    }
+}
+
+3.Dials Algo
+import java.util.*;
+
+public class Dials_Algo {
+    static final int INF = Integer.MAX_VALUE;
+    private int V;
+    private ArrayList<ArrayList<Tuple>> adj;
+
+    public Dials_Algo(int v) {
+        this.V = v;
+        this.adj = new ArrayList<ArrayList<Tuple>>();
+        for (int i = 0; i < v; i++)
+            this.adj.add(new ArrayList<Tuple>());
+    }
+
+    public void AddEdge(int u, int v, int w) {
+        adj.get(u).add(new Tuple(v, w));
+        adj.get(v).add(new Tuple(u, w));
+    }
+
+    public void shortestPath(int src, int W){
+        int[] dist = new int[V];
+        Arrays.fill(dist, INF);
+
+        ArrayList<Integer>[] B = new ArrayList[W * V + 1];
+        for(int i = 0; i < W * V + 1; i++){
+            B[i] = new ArrayList<Integer>();
+        }
+        B[0].add(src);
+        dist[src] = 0;
+        int idx = 0;
+
+        while(true){
+            while (B[idx].size() == 0 && idx < W * V){
+                idx ++;
+            }
+
+            if (idx == W * V){
+                break;
+            }
+
+            int u = B[idx].get(0);
+            B[idx].remove(0);
+
+            for(Tuple i : adj.get(u)){
+                int v = i.v;
+                int weight = i.w;
+                int du = dist[u];
+                int dv = dist[v];
+                if(dv > du + weight){
+                    dist[v] = du + weight;
+                    dv = dist[v];
+                    B[dv].add(0, v);
+                }
+            }
+        }
+
+        System.out.println("Vertex Distance from Source");
+        for (int i = 0; i < V; ++i)
+            System.out.println(i + "\t\t" + dist[i]);
+    }
+
+    static class Tuple{
+        int v, w;
+
+        Tuple(int v, int w){
+            this.v = v;
+            this.w = w;
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner s = new Scanner(System.in);
+        int V = s.nextInt();
+        Dials_Algo g = new Dials_Algo(V);
+        int e = s.nextInt();
+        int st, en, d;
+
+        for (int i = 0; i < e; i++) {
+            st = s.nextInt();
+            en = s.nextInt();
+            d = s.nextInt();
+            g.AddEdge(st, en, d);
+        }
+        g.shortestPath(0, e);
+    }
+}
+
+4.Graphs_BFS
+import java.util.*;
+
+public class Graphs_BFS{
+    private int V; // No of vertices
+    private LinkedList<Integer> adj[];
+
+    Graphs_BFS(int v){
+        V = v;
+        adj = new LinkedList[v];
+        for(int i = 0; i < v; i++){
+            adj[i] = new LinkedList();
+        }
+    }
+
+    void addEdge(int v, int w){
+        adj[v].add(w);
+    }
+
+    void BFS(int s){
+        boolean visited[] = new boolean[V];
+
+        LinkedList<Integer> queue = new LinkedList<Integer>();
+
+        visited[s] = true;
+        queue.add(s);
+
+        while(queue.size() != 0){
+            s = queue.poll();
+            System.out.print(s + " ");
+
+            Iterator<Integer> i = adj[s].listIterator();
+            while(i.hasNext()){
+                int n = i.next();
+                if(!visited[n]){
+                    visited[n] = true;
+                    queue.add(n);
+                }
+            }
+        }
+    }
+
+    public static void main(String args[]) {
+        Graphs_BFS g = new Graphs_BFS(4);
+
+        g.addEdge(0, 1);
+        g.addEdge(0, 2);
+        g.addEdge(1, 2);
+        g.addEdge(2, 0);
+        g.addEdge(2, 3);
+        g.addEdge(3, 3);
+
+        System.out.println("Following is Breadth First Traversal " +
+                "(starting from vertex 2)");
+
+        g.BFS(2);
+    }
+}
+5. Graphs_DFS
+import java.util.*;
+
+public class Graphs_DFS {
+    private int V;
+    private LinkedList<Integer> adj[];
+
+    Graphs_DFS(int v){
+        V = v;
+        adj = new LinkedList[v];
+        for (int i = 0; i < v; i++){
+            adj[i] = new LinkedList();
+        }
+    }
+
+    void addEdge(int v, int w){
+        adj[v].add(w);
+    }
+
+    void DFSUtil(int v, boolean visited[]){
+        visited[v] = true;
+        System.out.print(v + " ");
+
+        Iterator<Integer> i = adj[v].listIterator();
+        while(i.hasNext()){
+            int n = i.next();
+            if(!visited[v]){
+                DFSUtil(n, visited);
+            }
+        }
+    }
+
+    void DFS(int v){
+        boolean visited[] = new boolean[V];
+        DFSUtil(v, visited);
+    }
+
+    public static void main(String args[]) {
+        Graphs_DFS g = new Graphs_DFS(4);
+
+        g.addEdge(0, 1);
+        g.addEdge(0, 2);
+        g.addEdge(1, 2);
+        g.addEdge(2, 0);
+        g.addEdge(2, 3);
+        g.addEdge(3, 3);
+
+        System.out.println("Following is Depth First Traversal " +
+                "(starting from vertex 2)");
+
+        g.DFS(2);
+    }
+}
+6. HeapSort
+import java.util.*;
+
+public class HeapSort {
+    
+    // Method to perform heap sort
+    public static void sort(int arr[]) {
+        int N = arr.length;
+        
+        // Build heap (rearrange array)
+        for (int i = N / 2 - 1; i >= 0; i--) {
+            heapify(arr, N, i);
+        }
+        
+        // One by one extract an element from heap
+        for (int i = N - 1; i > 0; i--) {
+            // Move current root to end
+            int temp = arr[0];
+            arr[0] = arr[i];
+            arr[i] = temp;
+            
+            // Call max heapify on the reduced heap
+            heapify(arr, i, 0);
+        }
+    }
+    
+    // To heapify a subtree rooted with node i which is an index in arr[]. N is size of heap
+    static void heapify(int arr[], int N, int i) {
+        int largest = i;    // Initialize largest as root
+        int l = 2 * i + 1;  // left = 2*i + 1
+        int r = 2 * i + 2;  // right = 2*i + 2
+        
+        // If left child is larger than root
+        if (l < N && arr[l] > arr[largest])
+            largest = l;
+        
+        // If right child is larger than largest so far
+        if (r < N && arr[r] > arr[largest])
+            largest = r;
+        
+        // If largest is not root
+        if (largest != i) {
+            int swap = arr[i];
+            arr[i] = arr[largest];
+            arr[largest] = swap;
+            
+            // Recursively heapify the affected sub-tree
+            heapify(arr, N, largest);
+        }
+    }
+    
+    public static void main(String args[]) {
+        Scanner s = new Scanner(System.in);
+        int n = s.nextInt();  // Input size of array
+        int arr[] = new int[n];  // Array to store elements
+        
+        // Input elements of the array
+        for (int i = 0; i < n; i++)
+            arr[i] = s.nextInt();
+        
+        sort(arr);  // Sort the array using heap sort
+        
+        System.out.println("Sorted array is");
+        
+        // Print the sorted array
+        for (int i = 0; i < n; i++)
+            System.out.print(arr[i] + " ");
+        
+        System.out.println();  // Move to next line
+    }
+}
+7. Recover BST
+
+import java.util.Stack;
+
+class TreeNode{
+    int val;
+    TreeNode left;
+    TreeNode right;
+    
+    TreeNode() {}
+    
+    TreeNode(int val){
+        this.val = val;
+    }
+    
+    TreeNode(int val, TreeNode left, TreeNode right){
+        this.val = val;
+        this.left = left;
+        this.right = right;
+    }
+}
+
+
+class Solution{
+    public void recoverbst(TreeNode root){
+        Stack<TreeNode> stack = new Stack<>();
+        TreeNode current = root;
+        TreeNode lastProcessed = null;
+        TreeNode[] swapped = new TreeNode[2];
+
+        while (!stack.isEmpty() || current != null){
+            
+            while (current != null){
+                stack.push(current);
+                current = current.left;
+            }
+
+            current = stack.pop();
+            if (lastProcessed != null && lastProcessed.val > current.val){
+                if (swapped[0] == null){
+                    swapped[0] = lastProcessed;
+                    swapped[1] = current;
+                }
+                else{
+                    swapped[1] = current;
+                    break;
+                }
+            }
+            lastProcessed = current;
+            current = current.right;
+        }
+    }
+}
+
+public class Recover_BST{
+    public static void main(String args[]){
+     
+        TreeNode root = new TreeNode(3);
+        root.left = new TreeNode(1);
+        root.right = new TreeNode(4);
+        root.right.left = new TreeNode(2);
+
+        Solution solution = new Solution();
+        solution.recoverbst(root);
+
+        printInorder(root);
+
+    }
+
+    static void printInorder(TreeNode node){
+        if (node == null){
+            return;
+        }
+        printInorder(node.left);
+        System.out.println(" " + node.val);
+        printInorder(node.right);
+    }
+}
+
+8. Topological sort
+import java.util.*;
+
+class TopologicalSort {
+    // Graph coloring: 0->not visited...1->visited...2->visited & processed
+    private boolean detectCycleUtil(List<List<Integer>> adj, int[] visited, int v) {
+        if (visited[v] == 1)
+            return true;
+        if (visited[v] == 2)
+            return false;
+
+        visited[v] = 1; // Mark current as visited
+        for (int i = 0; i < adj.get(v).size(); ++i)
+            if (detectCycleUtil(adj, visited, adj.get(v).get(i)))
+                return true;
+
+        visited[v] = 2; // Mark current node as processed
+        return false;
+    }
+
+    // Cycle detection
+    private boolean detectCycle(List<List<Integer>> adj, int n) {
+        int[] visited = new int[n];
+        for (int i = 0; i < n; ++i)
+            if (visited[i] == 0)
+                if (detectCycleUtil(adj, visited, i))
+                    return true;
+        return false;
+    }
+
+    // Topological sort
+    private void dfs(List<List<Integer>> adj, int v, boolean[] visited, Stack<Integer> mystack) {
+        visited[v] = true;
+        for (int i = 0; i < adj.get(v).size(); ++i)
+            if (!visited[adj.get(v).get(i)])
+                dfs(adj, adj.get(v).get(i), visited, mystack);
+
+        mystack.push(v);
+    }
+
+    public int[] findOrder(int numCourses, int[][] prerequisites) {
+        List<List<Integer>> adj = new ArrayList<>();
+        for (int i = 0; i < numCourses; i++)
+            adj.add(new ArrayList<>());
+
+        for (int i = 0; i < prerequisites.length; ++i)
+            adj.get(prerequisites[i][1]).add(prerequisites[i][0]);
+
+        int[] ans = new int[numCourses];
+        if (detectCycle(adj, numCourses))
+            return new int[0];
+
+        Stack<Integer> mystack = new Stack<>();
+        boolean[] visited = new boolean[numCourses];
+
+        for (int i = 0; i < numCourses; ++i)
+            if (!visited[i])
+                dfs(adj, i, visited, mystack);
+
+        int index = 0;
+        while (!mystack.isEmpty()) {
+            ans[index++] = mystack.pop();
+        }
+        return ans;
+    }
+
+    public static void main(String[] args) {
+        TopologicalSort solution = new TopologicalSort();
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter the number of courses: ");
+        int numCourses = scanner.nextInt();
+
+        System.out.print("Enter the number of prerequisites: ");
+        int n = scanner.nextInt();
+        int[][] prerequisites = new int[n][2];
+
+        System.out.println("Enter prerequisite pairs (course, prerequisite):");
+        for (int i = 0; i < n; i++) {
+            prerequisites[i][0] = scanner.nextInt();
+            prerequisites[i][1] = scanner.nextInt();
+        }
+
+        int[] result = solution.findOrder(numCourses, prerequisites);
+        System.out.println("Topological order of courses:");
+        System.out.println(Arrays.toString(result));
+    }
+}
+
+9. Vertical order traversal
+import java.util.*;
+import java.util.Map.Entry;
+
+class Node{
+    int data;
+    Node left, right;
+
+    public Node(int data){
+        this.data = data;
+        left = right = null;
+    }
+}
+
+public class Vertical_Order_Traversal {
+    static Node root;
+
+    static class BinaryTree{
+        
+        public Node build(String s[]){
+            if (s[0].equals("N") || s.length == 0){
+                return null;
+            }
+            Node root = new Node(Integer.parseInt(s[0]));
+            Queue<Node> q = new LinkedList<>();
+            q.add(root);
+
+            int i = 1;
+            while(!q.isEmpty() && i < s.length){
+                Node curr = q.poll();
+                String cval = s[i];
+                if (!cval.equals("N")){
+                    int h = Integer.parseInt(cval);
+                    curr.left = new Node(h);
+                    q.add(curr.left);
+                }
+                i++;
+                if (i >= s.length){
+                    break;
+                }
+                cval = s[i];
+                if (!cval.equals("N")){
+                    int h = Integer.parseInt(cval);
+                    curr.right = new Node(h);
+                    q.add(curr.right);
+                }
+                i++;
+            }
+
+            return root;
+        }
+
+        static void preOrderTraversal(Node root, long hd, long vd, TreeMap<Long, Vector<Integer>> m){
+            if(root == null){
+                return;
+            }
+            long val = hd << 30 | vd;
+            if(m.get(val) != null){
+                m.get(val).add(root.data);
+            }
+            else{
+                Vector<Integer> v = new Vector<>();
+                v.add(root.data);
+                m.put(val, v);
+            }
+
+            preOrderTraversal(root.left, hd - 1, vd + 1, m);
+            preOrderTraversal(root.right, hd + 1, vd + 1, m);
+        }
+
+        void verticalOrder(Node root){
+            TreeMap<Long, Vector<Integer>> mp = new TreeMap<>();
+            preOrderTraversal(root, 0, 1, mp);
+            int prekey = Integer.MAX_VALUE;
+
+            for(Entry<Long, Vector<Integer>> entry : mp.entrySet()){
+                if(prekey != Integer.MAX_VALUE && (entry.getKey() >> 30 ) != prekey){
+                    System.out.println();
+                }
+                prekey = (int) (entry.getKey() >> 30);
+                for(int x : entry.getValue()){
+                    System.out.print(x + " ");
+                }
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        Vertical_Order_Traversal.BinaryTree bt = new Vertical_Order_Traversal.BinaryTree();
+
+        String s[] = sc.nextLine().split(" ");
+        root = bt.build(s);
+        bt.verticalOrder(root);
+    }
+
+}
+
+10. Views of a tree
+import java.util.*;
+
+class Node{
+    int data, hd;
+    Node left, right;
+
+    public Node(int data){
+        this.data = data;
+        left = right = null;
+        this.hd = Integer.MAX_VALUE;
+    }
+}
+
+public class Views_of_a_Tree {
+
+    static Node root;
+
+    static Node build(String s[]){
+        if (s[0].equals("N") || s.length == 0){
+            return null;
+        }
+
+        Node root = new Node(Integer.parseInt(s[0]));
+        Queue<Node> q = new LinkedList<Node>();
+        q.add(root);
+        int i = 1;
+
+        while(!q.isEmpty() && i < s.length){
+            Node curr = q.poll();
+            
+            String cval = s[i];
+            if(!cval.equals("N")){
+                int h = Integer.parseInt(cval);
+                curr.left = new Node(h);
+                q.add(curr.left);
+            }
+            i++;
+            
+            if (i >= s.length){
+                break;
+            }
+            
+            cval = s[i];
+            if (!cval.equals("N")){
+                int h = Integer.parseInt(cval);
+                curr.right = new Node(h);
+                q.add(curr.right);
+            }
+            i++;
+        }
+        return root;
+    }
+
+    // Right View
+    void rightView(Node root){
+        if (root == null){
+            return;
+        }
+
+        Queue<Node> q = new LinkedList<>();
+        q.add(root);
+
+        while (!q.isEmpty()){
+            int n = q.size();
+            for(int i = 0; i < n; i++){
+                Node curr = q.peek();
+                q.remove();
+                if(i == n - 1){
+                    System.out.println(curr.data + " ");
+                }
+
+                if (curr.left != null){
+                    q.add(curr.left);
+                }
+                
+                if(curr.right != null){
+                    q.add(curr.right);
+                }
+            }
+        }
+    }
+
+    // Left View
+    void leftView(Node root){
+        if(root == null){
+            return;
+        }
+
+        Queue<Node> q = new LinkedList<>();
+        q.add(root);
+        while(!q.isEmpty()){
+            int n = q.size();
+            for (int i = 1; i <= n; i++){
+                Node curr = q.poll();
+                
+                if (i == 1){
+                    System.out.print(curr.data + " ");
+                }
+
+                if (curr.left != null){
+                    q.add(curr.left);
+                }
+
+                if (curr.right != null){
+                    q.add(curr.right);
+                }
+            }
+        }
+    }
+
+    // Top View
+    static class QueueObj{
+        Node node;
+        int hd;
+
+        QueueObj(Node node, int hd){
+            this.node = node;
+            this.hd = hd;
+        }
+    }
+
+    static void topView(Node root){
+        if (root == null){
+            return ;
+        }
+
+        Queue<QueueObj> q = new LinkedList<>();
+        Map<Integer, Integer> map = new HashMap<>();
+        int min = 0;
+        int max = 0;
+
+        q.add(new QueueObj(root, 0));
+        while (!q.isEmpty()){
+            QueueObj curr = q.poll();
+
+            if(!map.containsKey(curr.hd)){
+                map.put(curr.hd, curr.node.data);
+            }
+                
+            if(curr.node.left != null){
+                min = Math.min(min, curr.hd - 1);
+                q.add(new QueueObj(curr.node.left, curr.hd - 1));
+            }
+
+            if(curr.node.right != null){
+                max = Math.max(max, curr.hd + 1);
+                q.add(new QueueObj(curr.node.right, curr.hd + 1));
+            }
+        }
+
+        for(; min <= max; min++){
+            System.out.print(map.get(min) + " ");
+        }
+    }
+
+    // Bottom View
+    static void bottomView(Node root){
+        if (root == null){
+            return;
+        }
+
+        int hd = 0;
+
+        Map<Integer, Integer> map = new TreeMap<>();
+        Queue<Node> queue = new LinkedList<Node>();
+        root.hd = hd;
+        queue.add(root);
+
+        while(!queue.isEmpty()){
+            Node temp = queue.remove();
+            hd = temp.hd;
+            map.put(hd, temp.data);
+
+            if(temp.left != null){
+                temp.left.hd = hd - 1;
+                queue.add(temp.left);
+            }
+
+            if(temp.right != null){
+                temp.right.hd = hd + 1;
+                queue.add(temp.right);
+            }
+        }
+
+        for(int value : map.values()){
+            System.out.print(value + " ");
+        }
+    }
+
+    public static void main(String args[]){
+        Scanner sc = new Scanner(System.in);
+        Views_of_a_Tree ob = new Views_of_a_Tree();
+        String s[] = sc.nextLine().split(" ");
+        root = build(s);
+        ob.rightView(root);
+        System.out.println();
+        ob.leftView(root);
+        System.out.println();
+        topView(root);
+        System.out.println();
+        bottomView(root);
+    }
+
+}
+
